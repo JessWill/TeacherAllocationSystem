@@ -14,6 +14,8 @@
 */
 
 /** @type {typeof import('@adonisjs/framework/src/Route/Manager')} */
+const Helpers = use('Helpers')
+
 const Route = use('Route')
 
 //Authenticated Views
@@ -68,6 +70,20 @@ Route.post('posts', async ({ request }) => {
     return request.body()
   })
 
+Route.post('upload', async ({ request }) => {
+  const Alloc = request.file('Allocation', {
+    size: '10mb'
+  })
+
+  await Alloc.move(Helpers.tmpPath('uploads'), {
+    name: `${new Date().getTime()}.xlsm`
+  })
+
+  if (!Alloc.moved()) {
+    return Alloc.error()
+  }
+  return 'File moved'
+})
 
 //UserController Routes
 Route.post('/auth/login', 'UserController.login')
